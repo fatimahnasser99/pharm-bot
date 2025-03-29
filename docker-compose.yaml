@@ -1,0 +1,10 @@
+version: '3.8'
+services:
+  drug_extractor_service:
+
+    build:
+      context: ./drug_extractor_service
+      dockerfile: Dockerfile
+    container_name: drug_extractor_service
+    ports:
+      - "5000:5000"
