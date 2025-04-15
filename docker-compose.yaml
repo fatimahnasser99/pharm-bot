@@ -8,3 +8,11 @@ services:
     container_name: drug_extractor_service
     ports:
       - "5000:5000"
+
+  image_processing_service:
+    build:
+      context: ./medicine_detection_service
+      dockerfile: Dockerfile
+    container_name: medicine_detection_service
+    ports:
+      - "5001:5001"

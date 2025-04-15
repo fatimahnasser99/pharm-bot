@@ -1,5 +1,8 @@
 FROM python:3.9-slim
 
+ENV APP_HOST="0.0.0.0"
+ENV APP_PORT=5001
+
 # Set the working directory in the container
 WORKDIR /app
 

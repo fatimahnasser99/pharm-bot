@@ -47,8 +47,8 @@ def convert_yolo_to_json(results, class_names=None):
     return output
 
 
-@app.route('/predict', methods=['POST'])
-def predict():
+@app.route('/detect', methods=['POST'])
+def detect_medicine():
     if 'file' not in request.files:
         return jsonify({"error": "No file uploaded"}), 400
 
@@ -80,5 +80,8 @@ def predict():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5001, debug=True)
+if __name__ == "__main__":
+    host = os.environ.get("APP_HOST", "0.0.0.0")
+    port = int(os.environ.get("APP_PORT", 5001))
+    
+    app.run(debug=True, host=host, port=port)
