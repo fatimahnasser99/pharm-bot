@@ -29,7 +29,7 @@ This is a simple web app that uses **Google Cloud Vision OCR** to extract text f
 2. **Build the Docker image**
 
    ```bash
-   docker build -t ocr-app-flask .
+   docker build -t ocr-service .
    ```
 
 3. **Run the app**
