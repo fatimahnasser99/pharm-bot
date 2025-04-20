@@ -1,24 +1,64 @@
 version: '3.8'
+
 services:
+
   chromadb:
     image: chromadb/chroma
     ports:
       - "8000:8000"
     volumes:
       - ./data_pipeline/data/drugs_files/db:/data
-  drug_extractor_service:
-
-    build:
-      context: ./drug_extractor_service
-      dockerfile: Dockerfile
-    container_name: drug_extractor_service
+      
+  gateway:
+    build: ./gateway
+    container_name: gateway
     ports:
       - "5000:5000"
+    depends_on:
+      - medicine-detection-service
+      - ocr-service
+      - drug-extractor-service
+    networks:
+      - app-network
 
-  image_processing_service:
-    build:
-      context: ./medicine_detection_service
-      dockerfile: Dockerfile
-    container_name: medicine_detection_service
+  medicine-detection-service:
+    image: hsh24/medicine-detection-model:latest # from dockerhub
+    container_name: medicine-detection-service
     ports:
       - "5001:5001"
+    networks:
+      - app-network
+
+  ocr-service:
+    image: safaasalman/ocr-service:latest # from dockerhub
+    container_name: ocr-service
+    ports:
+      - "5002:5001"
+    networks:
+      - app-network
+
+  drug-extractor-service:
+    image: fhnass99/drug-extractor-service:latest # from dockerhub
+    container_name: drug-extractor-service
+    ports:
+      - "5003:5001"
+    networks:
+      - app-network
+
+
+  ui:
+    build: ./ui
+    container_name: ui
+    ports:
+      - "5004:5004"
+    depends_on:
+      - gateway
+    networks:
+      - app-network
+
+
+
+
+networks:
+  app-network:
+    driver: bridge

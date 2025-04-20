@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>PharmaBot Interface</title>
+</head>
+<body>
+    <h1>PharmaBot</h1>
+    <p>Upload an image or enter text to extract pharma-related terms.</p>
+
+    <form method="POST" enctype="multipart/form-data">
+        <label><strong>Upload Image:</strong></label><br>
+        <input type="file" name="file"><br><br>
+
+        <label><strong>Or Enter Text:</strong></label><br>
+        <textarea name="text" rows="6" cols="60" placeholder="Type your text here..."></textarea><br><br>
+
+        <button type="submit">Submit</button>
+    </form>
+
+    {% if result %}
+        <hr>
+        <h2>Extracted Text:</h2>
+        <pre>{{ result.extracted_text }}</pre>
+
+        <h2>Detected Pharma Terms:</h2>
+        {% if result.drugs_list %}
+            <ul>
+                {% for drug in result.drugs_list %}
+                    <li>{{ drug }}</li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No pharma terms detected.</p>
+        {% endif %}
+    {% endif %}
+
+    {% if error %}
+        <p style="color: red;"><strong>{{ error }}</strong></p>
+    {% endif %}
+</body>
+</html>
