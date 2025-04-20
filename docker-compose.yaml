@@ -10,8 +10,6 @@ services:
       - medicine-detection-service
       - ocr-service
       - drug-extractor-service
-    volumes:
-      - ./shared-static:/app/static/uploads  # for reading result.jpg
     networks:
       - app-network
 
@@ -20,8 +18,6 @@ services:
     container_name: medicine-detection-service
     ports:
       - "5001:5001"
-    volumes:
-      - ./shared-static:/app/static/uploads  # to write result.jpg
     networks:
       - app-network
 

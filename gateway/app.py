@@ -1,11 +1,10 @@
 from flask import Flask, request, jsonify
 import requests
-import os
 import io
+from PIL import Image
 
 app = Flask(__name__)
 
-# Config for service URLs (assume internal Docker hostnames via docker-compose)
 DETECTION_URL = "http://medicine-detection-service:5001/detect"
 OCR_URL = "http://ocr-service:5001/extracted_text"
 EXTRACTOR_URL = "http://drug-extractor-service:5000/extract"
@@ -13,35 +12,61 @@ EXTRACTOR_URL = "http://drug-extractor-service:5000/extract"
 @app.route("/analyze", methods=["POST"])
 def analyze():
     try:
-        if 'file' in request.files:
-            # 📦 Step 1: Send to Object Detection
-            image_file = request.files['file']
-            files = {'file': image_file.stream}
+        extracted_text = ""
 
-            detect_response = requests.post(DETECTION_URL, files=files)
+        if 'file' in request.files:
+            image_file = request.files['file']
+
+            # Read original image in memory
+            image_bytes = image_file.read()
+            original_image = Image.open(io.BytesIO(image_bytes)).convert("RGB")
+
+            # Step 1: Object detection
+            detect_response = requests.post(DETECTION_URL, files={"file": io.BytesIO(image_bytes)})
             if detect_response.status_code != 200:
                 return jsonify({"error": "Object detection failed"}), 500
 
-            # 📸 Step 2: Read result image (saved by detection service)
-            result_image_path = "/app/static/uploads/result.jpg"  # Must match detection service output
-            with open(result_image_path, "rb") as img:
-                ocr_response = requests.post(OCR_URL, files={"file": img})
+            detection_result = detect_response.json()
+            predictions = detection_result.get("predictions", [])
 
-            if ocr_response.status_code != 200:
-                return jsonify({"error": "OCR failed"}), 500
+            if not predictions:
+                return jsonify({"error": "No objects detected"}), 200
 
-            extracted_text = ocr_response.json().get("extracted_text", "")
+            texts = []
+            # print the predictions for debugging
+            print(predictions)
+            for pred in predictions:
+                x, y = pred["x"], pred["y"]
+                w, h = pred["width"], pred["height"]
 
-        elif 'text' in request.json:
-            # Direct text input from UI
+                left = int(x - w / 2)
+                top = int(y - h / 2)
+                right = int(x + w / 2)
+                bottom = int(y + h / 2)
+
+                # Crop and prepare image for OCR
+                cropped_image = original_image.crop((left, top, right, bottom))
+                cropped_bytes = io.BytesIO()
+                cropped_image.save(cropped_bytes, format="JPEG")
+                cropped_bytes.seek(0)
+
+                # Send to OCR
+                ocr_response = requests.post(OCR_URL, files={"file": cropped_bytes})
+                if ocr_response.status_code == 200:
+                    text = ocr_response.json().get("extracted_text", "")
+                    texts.append(text)
+                else:
+                    texts.append("[OCR Failed]")
+
+            extracted_text = "\n".join(texts)
+
+        elif request.is_json and 'text' in request.json:
             extracted_text = request.json["text"]
-
         else:
             return jsonify({"error": "No valid input"}), 400
 
-        # 💊 Step 3: Send to Drug Extractor
+        # Step 2: Send to drug extractor
         extract_response = requests.post(EXTRACTOR_URL, json={"text": extracted_text})
-
         if extract_response.status_code not in [200, 201]:
             return jsonify({"error": "Drug extraction failed"}), 500
 
@@ -54,7 +79,6 @@ def analyze():
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
