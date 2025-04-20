@@ -1,5 +1,11 @@
 version: '3.8'
 services:
+  chromadb:
+    image: chromadb/chroma
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./data_pipeline/data/drugs_files/db:/data
   drug_extractor_service:
 
     build:
