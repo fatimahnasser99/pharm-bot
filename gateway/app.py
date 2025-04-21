@@ -2,6 +2,8 @@ from flask import Flask, request, jsonify
 import requests
 import io
 from PIL import Image
+import base64
+import json
 
 app = Flask(__name__)
 
@@ -13,6 +15,9 @@ EXTRACTOR_URL = "http://drug-extractor-service:5000/extract"
 def analyze():
     try:
         extracted_text = ""
+        predictions = []
+        image_data = None
+        detection_result = {}
 
         if 'file' in request.files:
             image_file = request.files['file']
@@ -33,8 +38,6 @@ def analyze():
                 return jsonify({"error": "No objects detected"}), 200
 
             texts = []
-            # print the predictions for debugging
-            print(predictions)
             for pred in predictions:
                 x, y = pred["x"], pred["y"]
                 w, h = pred["width"], pred["height"]
@@ -60,6 +63,12 @@ def analyze():
 
             extracted_text = "\n".join(texts)
 
+            # Convert the original image to base64 for embedding in the response
+            image_buffer = io.BytesIO()
+            original_image.save(image_buffer, format="JPEG")
+            image_buffer.seek(0)
+            image_data = base64.b64encode(image_buffer.read()).decode('utf-8')
+
         elif request.is_json and 'text' in request.json:
             extracted_text = request.json["text"]
         else:
@@ -74,7 +83,10 @@ def analyze():
 
         return jsonify({
             "extracted_text": extracted_text,
-            "drugs_list": drugs
+            "drugs_list": drugs,
+            "image_data": image_data,
+            "predictions": predictions,
+            "detection_result": json.dumps(detection_result)  # Serialize detection_result
         }), 200
 
     except Exception as e:

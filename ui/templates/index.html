@@ -1,42 +1,158 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>PharmaBot Interface</title>
-</head>
-<body>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f9;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      h1 {
+        color: #4caf50;
+        margin-top: 20px;
+      }
+      form {
+        background: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        width: 80%;
+        max-width: 600px;
+      }
+      label {
+        font-weight: bold;
+      }
+      textarea,
+      input[type="file"] {
+        width: calc(100% - 20px);
+        margin-top: 10px;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+      }
+      button {
+        width: 100%;
+        margin-top: 10px;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        background-color: #4caf50;
+        color: white;
+        border: none;
+        cursor: pointer;
+      }
+      button:hover {
+        background-color: #45a049;
+      }
+      .result-section {
+        margin-top: 20px;
+        width: 80%;
+        max-width: 600px;
+        background: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      }
+      .image-container {
+        position: relative;
+        display: inline-block;
+      }
+      pre {
+        background: #f4f4f9;
+        padding: 10px;
+        border-radius: 4px;
+        overflow-x: auto;
+      }
+      ul {
+        list-style-type: none;
+        padding: 0;
+      }
+      ul li {
+        background: #e8f5e9;
+        margin: 5px 0;
+        padding: 10px;
+        border-radius: 4px;
+      }
+      p.error {
+        color: red;
+        font-weight: bold;
+      }
+      p {
+        max-width: 600px;
+        text-align: center;
+        font-weight: 600;
+        padding: 0 20px;
+      }
+    </style>
+  </head>
+  <body>
     <h1>PharmaBot</h1>
-    <p>Upload an image or enter text to extract pharma-related terms.</p>
+    <p>
+      To check for potential drug interactions, upload an image containing the
+      drug names or enter them in the text field below.
+    </p>
 
     <form method="POST" enctype="multipart/form-data">
-        <label><strong>Upload Image:</strong></label><br>
-        <input type="file" name="file"><br><br>
+      <label><strong>Upload Image:</strong></label
+      ><br />
+      <input type="file" name="file" /><br /><br />
 
-        <label><strong>Or Enter Text:</strong></label><br>
-        <textarea name="text" rows="6" cols="60" placeholder="Type your text here..."></textarea><br><br>
+      <label><strong>Or Enter Text:</strong></label
+      ><br />
+      <textarea
+        name="text"
+        rows="6"
+        cols="60"
+        placeholder="Type your text here..."
+      ></textarea
+      ><br /><br />
 
-        <button type="submit">Submit</button>
+      <button type="submit">Submit</button>
     </form>
 
     {% if result %}
-        <hr>
-        <h2>Extracted Text:</h2>
-        <pre>{{ result.extracted_text }}</pre>
+    <div class="result-section">
+      <h2>Detected Pharma Terms:</h2>
+      {% if result.drugs_list %}
+      <ul>
+        {% for drug in result.drugs_list %}
+        <li>{{ drug }}</li>
+        {% endfor %}
+      </ul>
+      {% else %}
+      <p>No pharma terms detected.</p>
+      {% endif %}
+      <h2>Extracted or Entered Text:</h2>
+      <pre>{{ result.extracted_text }}</pre>
 
-        <h2>Detected Pharma Terms:</h2>
-        {% if result.drugs_list %}
-            <ul>
-                {% for drug in result.drugs_list %}
-                    <li>{{ drug }}</li>
-                {% endfor %}
-            </ul>
-        {% else %}
-            <p>No pharma terms detected.</p>
-        {% endif %}
+      {% if result.image_data and result.detection_result %}
+      <h2>Detected Objects:</h2>
+      <div class="image-container" id="image-container">
+        <img
+          id="uploaded-image"
+          src="data:image/jpeg;base64,{{ result.image_data }}"
+          alt="Uploaded Image"
+          style="max-width: 100%; border: 1px solid #ccc"
+        />
+      </div>
+      <script>
+        window.detectionResult = JSON.parse(
+          `{{ result.detection_result | safe }}`
+        );
+        console.log("Detection result (parsed):", window.detectionResult);
+      </script>
+      <script src="/static/js/bounding-box.js"></script>
+      {% endif %}
+    </div>
+    {% endif %} {% if error %}
+    <p class="error">{{ error }}</p>
     {% endif %}
-
-    {% if error %}
-        <p style="color: red;"><strong>{{ error }}</strong></p>
-    {% endif %}
-</body>
+  </body>
 </html>

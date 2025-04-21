@@ -1,14 +1,13 @@
-version: '3.8'
+version: "3.8"
 
 services:
-
   chromadb:
     image: chromadb/chroma
     ports:
       - "8000:8000"
     volumes:
       - ./data_pipeline/data/drugs_files/db:/data
-      
+
   gateway:
     build: ./gateway
     container_name: gateway
@@ -30,7 +29,7 @@ services:
       - app-network
 
   ocr-service:
-    image: safaasalman/ocr-service:latest # from dockerhub
+    image: safaasalman/ocr-service:latest
     container_name: ocr-service
     ports:
       - "5002:5001"
@@ -38,13 +37,12 @@ services:
       - app-network
 
   drug-extractor-service:
-    image: fhnass99/drug-extractor-service:latest # from dockerhub
+    image: fhnass99/drug-extractor-service:latest
     container_name: drug-extractor-service
     ports:
       - "5003:5001"
     networks:
       - app-network
-
 
   ui:
     build: ./ui
@@ -55,9 +53,6 @@ services:
       - gateway
     networks:
       - app-network
-
-
-
 
 networks:
   app-network:
