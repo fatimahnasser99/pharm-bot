@@ -24,8 +24,8 @@ document.addEventListener("DOMContentLoaded", () => {
   // Create canvas element
   const canvas = document.createElement("canvas");
   canvas.style.position = "absolute";
-  canvas.style.left = "0";
-  canvas.style.top = "0";
+  canvas.style.left = uploadedImage.offsetLeft + "px";
+  canvas.style.top = uploadedImage.offsetTop + "px";
   canvas.style.pointerEvents = "none";
   canvas.style.zIndex = "10";
 
@@ -51,34 +51,27 @@ document.addEventListener("DOMContentLoaded", () => {
       ctx.strokeStyle = "red";
       ctx.lineWidth = 2;
       ctx.strokeRect(boxLeft, boxTop, boxWidth, boxHeight);
-
-      if (pred.class_name && pred.confidence) {
-        const label = `${pred.class_name} (${(pred.confidence * 100).toFixed(
-          2
-        )}%)`;
-
-        ctx.font = "12px Arial";
-        ctx.fillStyle = "rgba(255, 0, 0, 0.7)";
-        ctx.fillRect(
-          boxLeft,
-          boxTop - 20,
-          ctx.measureText(label).width + 10,
-          20
-        );
-
-        ctx.fillStyle = "white";
-        ctx.fillText(label, boxLeft + 5, boxTop - 5);
-      }
     });
   };
 
+  imageContainer.style.position = "relative";
   imageContainer.appendChild(canvas);
 
-  uploadedImage.onload = drawBoundingBoxes;
+  uploadedImage.onload = () => {
+    drawBoundingBoxes();
+    canvas.style.left = uploadedImage.offsetLeft + "px";
+    canvas.style.top = uploadedImage.offsetTop + "px";
+  };
 
   if (uploadedImage.complete) {
     drawBoundingBoxes();
+    canvas.style.left = uploadedImage.offsetLeft + "px";
+    canvas.style.top = uploadedImage.offsetTop + "px";
   }
 
-  window.addEventListener("resize", drawBoundingBoxes);
+  window.addEventListener("resize", () => {
+    drawBoundingBoxes();
+    canvas.style.left = uploadedImage.offsetLeft + "px";
+    canvas.style.top = uploadedImage.offsetTop + "px";
+  });
 });
