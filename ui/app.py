@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request
 import requests
+import re
 
 app = Flask(__name__)
 GATEWAY_URL = "http://gateway:5000/analyze"
@@ -23,6 +24,10 @@ def index():
 
             if response and response.status_code == 200:
                 result = response.json()
+                if result.get("interaction_result"):
+                    # Preprocess interaction_result
+                    result["interaction_result"] = re.sub(r"\*\*(.*?)\*\*", r"<b>\1</b>", result["interaction_result"])
+                    result["interaction_result"] = result["interaction_result"].replace("\n", "<br>")
                 if result.get("drugs_list") and len(result["drugs_list"]) < 2:
                     result["interaction_message"] = "At least 2 drugs should be added to check for interactions."
                 else:

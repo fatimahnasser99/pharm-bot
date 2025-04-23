@@ -1,23 +1,16 @@
 document.addEventListener("DOMContentLoaded", () => {
-  console.log("DOM fully loaded and parsed.");
-
   const imageContainer = document.getElementById("image-container");
   const uploadedImage = document.getElementById("uploaded-image");
 
   if (!imageContainer || !uploadedImage) {
-    console.error("Required DOM elements are missing.");
     return;
   }
 
-  console.log("Image container and uploaded image found.");
-
   // Use the global detectionResult variable
   const detectionResult = window.detectionResult || {};
-  console.log("Detection result:", detectionResult);
 
   const predictions = detectionResult.predictions || [];
   if (predictions.length === 0) {
-    console.warn("No predictions found in detection result.");
     return;
   }
 

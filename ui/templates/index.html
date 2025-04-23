@@ -374,7 +374,6 @@
             window.detectionResult = JSON.parse(
               `{{ result.detection_result | safe }}`
             );
-            console.log("Detection result (parsed):", window.detectionResult);
           </script>
           <script src="/static/js/bounding-box.js"></script>
         </div>
@@ -395,7 +394,8 @@
           <p style="color: red; font-weight: bold">
             {{ result.interaction_message }}
           </p>
-          {% else %}
+          {% endif %} {% if result.interaction_result and not
+          result.interaction_message %}
           <div
             style="
               text-align: left;
@@ -406,7 +406,7 @@
               overflow-x: hidden;
             "
           >
-            {{ result.interaction_result | bold_text | safe }}
+            {{ result.interaction_result | safe }}
           </div>
           {% endif %}
         </div>
@@ -532,7 +532,6 @@
             };
           })
           .catch((error) => {
-            console.error("Error accessing camera:", error);
             alert("Unable to access the camera.");
             closeCamera();
           });

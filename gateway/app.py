@@ -4,6 +4,8 @@ import io
 from PIL import Image
 import base64
 import json
+import os
+
 
 app = Flask(__name__)
 
@@ -105,4 +107,7 @@ def analyze():
         return jsonify({"error": str(e)}), 500
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000)
+    host = os.environ.get("APP_HOST", "0.0.0.0")
+    port = int(os.environ.get("APP_PORT", 5000))
+    
+    app.run(host=host, port=port)

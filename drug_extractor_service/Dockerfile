@@ -1,11 +1,6 @@
 # Use official Python base image
 FROM python:3.11-slim
 
-# Set environment variables
-ENV $(cat .env | xargs)
-ENV APP_HOST="0.0.0.0"
-ENV APP_PORT=5000
-
 # Set work directory
 WORKDIR /app
 

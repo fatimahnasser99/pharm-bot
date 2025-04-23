@@ -1,6 +1,5 @@
 from flask import Flask, request, jsonify
 from google.cloud import vision
-import io
 import os
 
 app = Flask(__name__)
