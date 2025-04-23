@@ -1,6 +1,6 @@
 import os
 from flask import Flask, request, jsonify
-from detect_drug_interaction_serivce.src.services.drugs_interaction_detection import detect_drugs_interaction_from_text
+from services.drugs_interaction_detection import detect_drugs_interaction_from_text
 
 app = Flask(__name__)
 
