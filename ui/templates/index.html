@@ -1,42 +1,374 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>PharmaBot Interface</title>
-</head>
-<body>
-    <h1>PharmaBot</h1>
-    <p>Upload an image or enter text to extract pharma-related terms.</p>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PharmaBot</title>
+    <style>
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #f4f4f9;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        color: #333;
+      }
+      .container {
+        width: 100%;
+        background: #fffbfb;
+        margin: 20px;
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+        height: auto;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+      @media (min-width: 1024px) {
+        .container {
+          min-height: 88vh;
+        }
+      }
+      h1 {
+        color: #840132;
+        margin-bottom: 0px;
+        margin-top: 0px;
+        text-align: center;
+        font-size: 2.5rem;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+      }
+      p {
+        text-align: center;
+        font-weight: 600;
+        margin-bottom: 20px;
+      }
+      .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .upload-button {
+        background-color: #840132;
+        color: white;
+        padding: 10px;
+        border: none;
+        border-radius: 12px;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+      }
+      .upload-button:hover {
+        background-color: #a40a3c;
+      }
+      .input-container {
+        position: relative;
+        display: flex;
+        align-items: center;
+      }
+      textarea {
+        width: 100%;
+        padding: 10px 40px 10px 10px;
+        border: 1px solid #ccc;
+        border-radius: 12px;
+        font-size: 1rem;
+        resize: none;
+      }
+      .submit-button {
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        background-color: #840132;
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 36px;
+        height: 36px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+      }
+      .submit-button:hover {
+        background-color: #a40a3c;
+      }
+      .loader {
+        display: none;
+        margin: 30px auto;
+        border: 4px solid #f3f3f3;
+        border-top: 4px solid #840132;
+        border-radius: 50%;
+        width: 30px;
+        height: 30px;
+        animation: spin 1s linear infinite;
+      }
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+      .reset-button {
+        display: block;
+        width: auto;
+        max-width: 80px;
+        background-color: #016804d6;
+        color: white;
+        padding: 10px 10px;
+        border: none;
+        border-radius: 30px;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+      }
+      .reset-button:hover {
+        background-color: #45a049;
+      }
+      .result-section {
+        margin-top: 20px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        justify-content: center;
+      }
+      .result-card {
+        background: #fff;
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+        width: 100%;
+        text-align: center;
+      }
+      @media (min-width: 1024px) {
+        .result-section {
+          flex-wrap: nowrap;
+          gap: 10px;
+        }
+        .result-card {
+          max-width: none;
+        }
+      }
+      .result-card h2 {
+        color: #840132;
+        margin-bottom: 10px;
+        font-size: 1.5rem;
+      }
+      .result-card ul {
+        list-style-type: none;
+        padding: 0;
+        margin: 0;
+      }
+      .result-card ul li {
+        background: #fce4ec;
+        margin: 5px 0;
+        padding: 10px;
+        border-radius: 6px;
+        color: #840132;
+        font-weight: bold;
+      }
+      .result-card pre {
+        background: #f4f4f9;
+        padding: 10px;
+        border-radius: 6px;
+        overflow-x: auto;
+        font-size: 0.9rem;
+        text-align: left;
+      }
+      .image-container img {
+        max-width: 100%;
+        max-height: 280px; /* Restrict image height to container */
+        border: 2px solid #840132;
+        border-radius: 8px;
+      }
+      .error {
+        color: red;
+        font-weight: bold;
+        text-align: center;
+        margin-top: 20px;
+      }
+      .validation-message {
+        color: red;
+        margin-left: 10px;
+        margin-top: -8px;
+        font-size: 0.7rem;
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>PharmaBot</h1>
+      <p>
+        To check for potential drug interactions, upload an image or enter the
+        drug names in the text field below.
+      </p>
 
-    <form method="POST" enctype="multipart/form-data">
-        <label><strong>Upload Image:</strong></label><br>
-        <input type="file" name="file"><br><br>
+      <form method="POST" enctype="multipart/form-data" id="interaction-form">
+        <div class="form-group">
+          <button type="button" class="reset-button" onclick="resetForm()">
+            + New
+          </button>
+          <button
+            type="button"
+            class="upload-button"
+            onclick="triggerFileInput()"
+          >
+            Upload Image
+          </button>
+          <input
+            type="file"
+            name="file"
+            id="file-input"
+            style="display: none"
+            onchange="handleFileUpload()"
+          />
+          <div class="input-container">
+            <textarea
+              name="text"
+              id="text-input"
+              rows="3"
+              placeholder="Type your text here..."
+              oninput="disableFileInput(); validateInput();"
+            ></textarea>
+            <button type="submit" class="submit-button">&#10148;</button>
+          </div>
+          <span id="validation-message" class="validation-message"></span>
+        </div>
+        <div class="loader" id="loader"></div>
+      </form>
 
-        <label><strong>Or Enter Text:</strong></label><br>
-        <textarea name="text" rows="6" cols="60" placeholder="Type your text here..."></textarea><br><br>
-
-        <button type="submit">Submit</button>
-    </form>
-
-    {% if result %}
-        <hr>
-        <h2>Extracted Text:</h2>
-        <pre>{{ result.extracted_text }}</pre>
-
-        <h2>Detected Pharma Terms:</h2>
-        {% if result.drugs_list %}
-            <ul>
-                {% for drug in result.drugs_list %}
-                    <li>{{ drug }}</li>
-                {% endfor %}
-            </ul>
-        {% else %}
-            <p>No pharma terms detected.</p>
+      {% if result %}
+      <div class="result-section">
+        <div class="result-card">
+          <h2>Detected Pharma Terms:</h2>
+          {% if result.drugs_list %}
+          <ul>
+            {% for drug in result.drugs_list %}
+            <li>{{ drug }}</li>
+            {% endfor %}
+          </ul>
+          {% else %}
+          <p>No pharma terms detected.</p>
+          {% endif %}
+        </div>
+        <div class="result-card">
+          <h2>Extracted or Entered Text:</h2>
+          <pre>{{ result.extracted_text }}</pre>
+        </div>
+        {% if result.image_data and result.detection_result %}
+        <div class="result-card">
+          <h2>Detected Objects:</h2>
+          <div class="image-container" id="image-container">
+            <img
+              id="uploaded-image"
+              src="data:image/jpeg;base64,{{ result.image_data }}"
+              alt="Uploaded Image"
+            />
+          </div>
+          <script>
+            window.detectionResult = JSON.parse(
+              `{{ result.detection_result | safe }}`
+            );
+            console.log("Detection result (parsed):", window.detectionResult);
+          </script>
+          <script src="/static/js/bounding-box.js"></script>
+        </div>
         {% endif %}
-    {% endif %}
+      </div>
+      {% endif %} {% if error %}
+      <p class="error">{{ error }}</p>
+      {% endif %}
+    </div>
 
-    {% if error %}
-        <p style="color: red;"><strong>{{ error }}</strong></p>
-    {% endif %}
-</body>
+    <script>
+      const fileInput = document.getElementById("file-input");
+      const textInput = document.getElementById("text-input");
+      const validationMessage = document.getElementById("validation-message");
+      const form = document.getElementById("interaction-form");
+      const loader = document.getElementById("loader");
+      const resultSection = document.querySelector(".result-section");
+
+      function triggerFileInput() {
+        fileInput.click();
+      }
+
+      function handleFileUpload() {
+        if (fileInput.files.length > 0) {
+          textInput.disabled = true;
+          hideResults();
+          loader.style.display = "block";
+          form.submit();
+        }
+      }
+
+      function disableFileInput() {
+        if (textInput.value.trim() !== "") {
+          fileInput.disabled = true;
+        } else {
+          fileInput.disabled = false;
+        }
+      }
+
+      function validateInput() {
+        if (textInput.value.trim() === "") {
+          validationMessage.textContent = "Input cannot be empty.";
+          validationMessage.style.display = "inline";
+        } else {
+          validationMessage.style.display = "none";
+        }
+      }
+
+      function resetForm() {
+        form.reset();
+        textInput.disabled = false;
+        fileInput.disabled = false;
+        loader.style.display = "none";
+        hideResults();
+        validationMessage.style.display = "none";
+      }
+
+      function hideResults() {
+        if (resultSection) {
+          resultSection.style.display = "none";
+        }
+      }
+
+      function showResults() {
+        if (resultSection) {
+          resultSection.style.display = "flex";
+        }
+      }
+
+      form.addEventListener("submit", (event) => {
+        event.preventDefault();
+
+        const textValue = textInput.value.trim();
+        if (!textValue && (!fileInput.files || fileInput.files.length === 0)) {
+          validationMessage.textContent =
+            "Please enter text or upload an image.";
+          validationMessage.style.display = "inline";
+          return;
+        }
+
+        validationMessage.style.display = "none";
+        loader.style.display = "block";
+        hideResults();
+        form.submit();
+      });
+
+      textInput.addEventListener("keydown", (event) => {
+        if (event.key === "Enter" && !event.shiftKey) {
+          event.preventDefault();
+          form.querySelector(".submit-button").click();
+        }
+      });
+    </script>
+  </body>
 </html>

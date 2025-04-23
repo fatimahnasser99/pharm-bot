@@ -14,7 +14,7 @@ def detect_medicine():
         return jsonify({"error": "No file uploaded"}), 400
 
     file = request.files['file']
-    print(file)
+
     if file.filename == '':
         return jsonify({"error": "No file selected"}), 400
 
