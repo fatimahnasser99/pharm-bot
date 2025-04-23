@@ -7,7 +7,7 @@ services:
   #     - ./data_pipeline/data/drugs_files/db:/data
 
   gateway:
-    build: ./gateway
+    image: hsh24/gateway
     container_name: gateway
     ports:
       - "5000:5000"
@@ -16,6 +16,13 @@ services:
       - ocr-service
       - drug-extractor-service
       - drug-interaction-service
+    environment:
+      APP_HOST: "0.0.0.0"
+      APP_PORT: "5000"
+      DETECTION_URL: "http://medicine-detection-service:5001/detect"
+      OCR_URL: "http://ocr-service:5001/extracted_text"
+      EXTRACTOR_URL: "http://drug-extractor-service:5000/extract"
+      INTERACTION_URL: "http://drug-interaction-service:8000/rag"
     networks:
       - app-network
 
@@ -63,7 +70,7 @@ services:
       - app-network
 
   ui:
-    build: ./ui
+    image: hsh24/ui
     container_name: ui
     ports:
       - "5004:5004"

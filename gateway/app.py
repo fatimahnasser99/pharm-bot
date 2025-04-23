@@ -9,10 +9,10 @@ import os
 
 app = Flask(__name__)
 
-DETECTION_URL = "http://medicine-detection-service:5001/detect"
-OCR_URL = "http://ocr-service:5001/extracted_text"
-EXTRACTOR_URL = "http://drug-extractor-service:5000/extract"
-INTERACTION_URL = "http://drug-interaction-service:8000/rag"
+DETECTION_URL = os.environ.get("DETECTION_URL", "http://medicine-detection-service:5001/detect")
+OCR_URL = os.environ.get("OCR_URL", "http://ocr-service:5001/extracted_text")
+EXTRACTOR_URL = os.environ.get("EXTRACTOR_URL", "http://drug-extractor-service:5000/extract")
+INTERACTION_URL = os.environ.get("INTERACTION_URL", "http://drug-interaction-service:8000/rag")
 
 @app.route("/analyze", methods=["POST"])
 def analyze():
