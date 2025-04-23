@@ -2,6 +2,7 @@ import xml.etree.ElementTree as ET
 import json
 import os
 import sys
+import random
 
 def xml_to_dict(element):
     """
@@ -24,7 +25,7 @@ def xml_to_dict(element):
 
 def extract_drug_interactions(drug):
     """
-    Extracts drug interactions in the specified format.
+    Extracts up to 100 random drug interactions in the specified format.
     """
     interactions = []
     current_drug_name = drug.get("name", "this drug")
@@ -33,17 +34,25 @@ def extract_drug_interactions(drug):
     if "drug-interactions" in drug and isinstance(drug["drug-interactions"], dict):
         drug_interactions = drug["drug-interactions"].get("drug-interaction", [])
         if isinstance(drug_interactions, list):
-            for interaction in drug_interactions:
+            # Randomly sample up to 100 interactions
+            sampled_interactions = random.sample(drug_interactions, min(len(drug_interactions), 100))
+            for interaction in sampled_interactions:
+                second_drug_name = interaction.get("name", "unknown drug")
+                if isinstance(second_drug_name, dict):
+                    second_drug_name = second_drug_name.get("text", "unknown drug")
                 description = interaction.get("description", {}).get("text", "no description available")
-                interactions.append(f"{current_drug_name} interaction with {description}")
+                interactions.append(f"{current_drug_name} interaction with {second_drug_name} is: {description}")
         elif isinstance(drug_interactions, dict):
+            second_drug_name = drug_interactions.get("name", "unknown drug")
+            if isinstance(second_drug_name, dict):
+                second_drug_name = second_drug_name.get("text", "unknown drug")
             description = drug_interactions.get("description", {}).get("text", "no description available")
-            interactions.append(f"{current_drug_name} interaction with {description}")
+            interactions.append(f"{current_drug_name} interaction with {second_drug_name} is: {description}")
     return interactions
 
 def convert_xml_to_json(xml_file, output_dir):
     """
-    Converts an XML file to individual JSON files containing only drug interactions.
+    Converts an XML file to individual JSON files containing up to 100 random drug interactions for each drug.
     """
     tree = ET.parse(xml_file)
     root = tree.getroot()
@@ -55,8 +64,10 @@ def convert_xml_to_json(xml_file, output_dir):
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
 
-    # Process each drug and write its interactions to a JSON file
-    for child in root.findall('drug'):
+    # Process up to 100 drugs and write their interactions to JSON files
+    for i, child in enumerate(root.findall('drug')):
+        if i >= 100:  # Limit to 100 drugs
+            break
         drug_data = xml_to_dict(child)
         interactions = extract_drug_interactions(drug_data)
         if interactions:

@@ -23,8 +23,14 @@ def index():
 
             if response and response.status_code == 200:
                 result = response.json()
-            elif not error:
+                if result.get("drugs_list") and len(result["drugs_list"]) < 2:
+                    result["interaction_message"] = "At least 2 drugs should be added to check for interactions."
+                else:
+                    result["interaction_message"] = None
+            elif response:
                 error = f"Gateway error: {response.status_code}, {response.text}"
+            else:
+                error = "No response from the gateway service."
 
         except Exception as e:
             error = str(e)

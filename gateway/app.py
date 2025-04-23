@@ -10,6 +10,7 @@ app = Flask(__name__)
 DETECTION_URL = "http://medicine-detection-service:5001/detect"
 OCR_URL = "http://ocr-service:5001/extracted_text"
 EXTRACTOR_URL = "http://drug-extractor-service:5000/extract"
+INTERACTION_URL = "http://drug-interaction-service:8000/rag"
 
 @app.route("/analyze", methods=["POST"])
 def analyze():
@@ -18,6 +19,7 @@ def analyze():
         predictions = []
         image_data = None
         detection_result = {}
+        interaction_result = {}
 
         if 'file' in request.files:
             image_file = request.files['file']
@@ -80,13 +82,23 @@ def analyze():
             return jsonify({"error": "Drug extraction failed"}), 500
 
         drugs = extract_response.json().get("drugs_list", [])
+        # add a check to ensure drugs is an array of strings
+        if not isinstance(drugs, list) or not all(isinstance(drug, str) for drug in drugs):
+            return jsonify({"error": "Invalid drug list format"}), 500
+        # Step 3: Send drugs to drug interaction service
+        interaction_response = requests.post(INTERACTION_URL, json={"drugs": drugs})
+        if interaction_response.status_code == 200:
+            interaction_result = interaction_response.json().get("answer", {}).get("content", "")
+        else:
+            interaction_result = "[Drug interaction analysis failed]"
 
         return jsonify({
             "extracted_text": extracted_text,
             "drugs_list": drugs,
             "image_data": image_data,
             "predictions": predictions,
-            "detection_result": json.dumps(detection_result)  # Serialize detection_result
+            "detection_result": json.dumps(detection_result),  # Serialize detection_result
+            "interaction_result": interaction_result
         }), 200
 
     except Exception as e:

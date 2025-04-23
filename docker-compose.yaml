@@ -1,12 +1,10 @@
-version: "3.8"
-
 services:
-  chromadb:
-    image: chromadb/chroma
-    ports:
-      - "8000:8000"
-    volumes:
-      - ./data_pipeline/data/drugs_files/db:/data
+  # chromadb:
+  #   image: chromadb/chroma
+  #   ports:
+  #     - "8000:8000"
+  #   volumes:
+  #     - ./data_pipeline/data/drugs_files/db:/data
 
   gateway:
     build: ./gateway
@@ -17,12 +15,12 @@ services:
       - medicine-detection-service
       - ocr-service
       - drug-extractor-service
-      # - detect-drug-interaction-service
+      - drug-interaction-service
     networks:
       - app-network
 
   medicine-detection-service:
-    image: hsh24/medicine-detection-model:latest # from dockerhub
+    image: hsh24/medicine-detection-model:latest
     container_name: medicine-detection-service
     ports:
       - "5001:5001"
@@ -54,14 +52,32 @@ services:
       - gateway
     networks:
       - app-network
-    
-  detect-drug-interaction-service:
-    image: fhnass99/detect-drug-interaction-service:latest
-    container_name: detect-drug-interaction-service
+  # detect-drug-interaction-service:
+  #   image: fhnass99/detect-drug-interaction-service:latest
+  #   container_name: detect-drug-interaction-service
+  #   ports:
+  #     - "5005:5005"
+  #   # networks:
+  #   #   - app-network
+
+  # detect-drug-interaction-service:
+  #   image: fhnass99/detect-drug-interaction-service:latest
+  #   container_name: detect-drug-interaction-service
+  #   ports:
+  #     - "5005:5005"
+  #   # networks:
+  #   #   - app-network
+  drug-interaction-service:
+    image: hsh24/drug-interaction-service:latest
+    container_name: drug-interaction-service
     ports:
-      - "5005:5005"
-    # networks:
-    #   - app-network
+      - "8000:8000"
+    environment:
+      OPENAI_API_KEY: "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"
+      PINECONE_API_KEY: "pcsk_6gqt4x_J93voVvZDfnCFDxHLavKXCQhAdhVu7bcMALgAZHdebvRxqQiJkMZ8UWXgZgsDBv"
+      INDEX_NAME: "pharma-bot-rag"
+    networks:
+      - app-network
 
 networks:
   app-network:

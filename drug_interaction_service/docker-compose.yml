@@ -1,0 +1,11 @@
+version: "3.8"
+
+services:
+  app:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      OPENAI_API_KEY: "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"
+      PINECONE_API_KEY: "pcsk_6gqt4x_J93voVvZDfnCFDxHLavKXCQhAdhVu7bcMALgAZHdebvRxqQiJkMZ8UWXgZgsDBv"
+      INDEX_NAME: "pharma-bot-rag"

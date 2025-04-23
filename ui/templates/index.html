@@ -18,7 +18,7 @@
       }
       .container {
         width: 100%;
-        background: #fffbfb;
+        background: #ffffff;
         margin: 20px;
         padding: 20px;
         border-radius: 12px;
@@ -27,6 +27,7 @@
         display: flex;
         flex-direction: column;
         justify-content: center;
+        position: relative;
       }
       @media (min-width: 1024px) {
         .container {
@@ -51,7 +52,13 @@
         flex-direction: column;
         gap: 10px;
       }
+      .camera-button,
       .upload-button {
+        display: flex;
+        flex: 1;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
         background-color: #840132;
         color: white;
         padding: 10px;
@@ -61,8 +68,14 @@
         cursor: pointer;
         transition: background-color 0.3s ease;
       }
+      .camera-button:hover,
       .upload-button:hover {
         background-color: #a40a3c;
+      }
+      .camera-button img,
+      .upload-button img {
+        width: 20px;
+        height: 20px;
       }
       .input-container {
         position: relative;
@@ -82,7 +95,6 @@
         right: 10px;
         top: 50%;
         transform: translateY(-50%);
-        background-color: #840132;
         color: white;
         border: none;
         border-radius: 50%;
@@ -93,9 +105,6 @@
         align-items: center;
         cursor: pointer;
         transition: background-color 0.3s ease;
-      }
-      .submit-button:hover {
-        background-color: #a40a3c;
       }
       .loader {
         display: none;
@@ -134,25 +143,29 @@
       .result-section {
         margin-top: 20px;
         display: flex;
-        flex-wrap: wrap;
+        flex-wrap: nowrap; /* Ensure all cards are on the same row */
         gap: 20px;
-        justify-content: center;
+        justify-content: space-between; /* Distribute cards evenly across the row */
       }
       .result-card {
         background: #fff;
         padding: 20px;
         border-radius: 12px;
         box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
-        width: 100%;
         text-align: center;
+        flex: 1; /* Allow cards to grow and take up available space */
+        max-width: 45%; /* Ensure small cards take up to 45% of the row */
       }
-      @media (min-width: 1024px) {
+      .result-card.large {
+        flex: 2;
+        max-width: 90%; /* Ensure large cards take up to 90% of the row */
+      }
+      @media (max-width: 1024px) {
         .result-section {
-          flex-wrap: nowrap;
-          gap: 10px;
+          flex-wrap: wrap; /* Allow wrapping on smaller screens */
         }
         .result-card {
-          max-width: none;
+          max-width: 100%; /* Full width for all cards on smaller screens */
         }
       }
       .result-card h2 {
@@ -177,7 +190,9 @@
         background: #f4f4f9;
         padding: 10px;
         border-radius: 6px;
-        overflow-x: auto;
+        white-space: pre-wrap; /* Enable word wrapping */
+        word-wrap: break-word; /* Break long words */
+        overflow-x: hidden; /* Prevent horizontal scrolling */
         font-size: 0.9rem;
         text-align: left;
       }
@@ -200,11 +215,101 @@
         font-size: 0.7rem;
         display: none;
       }
+      .top-right-button {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        background-color: transparent;
+        border: none;
+        cursor: pointer;
+        padding: 10px;
+        border-radius: 50%;
+        transition: background-color 0.3s ease;
+      }
+      @media screen and (max-width: 768px) {
+        .top-right-button {
+          top: 5px;
+          right: 5px;
+        }
+      }
+      .top-right-button:hover {
+        background-color: rgba(0, 0, 0, 0.1);
+      }
+      .top-right-button svg {
+        fill: #840132;
+        width: 24px;
+        height: 24px;
+      }
+      .camera-dialog {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        padding: 20px;
+        z-index: 1000;
+        display: none;
+        flex-direction: column;
+        align-items: center;
+      }
+      .camera-dialog video {
+        border: 2px solid #840132;
+        border-radius: 12px;
+        max-width: 100%;
+        max-height: 100%;
+      }
+      .camera-dialog button {
+        margin-top: 10px;
+        padding: 10px 20px;
+        background-color: #840132;
+        color: white;
+        border: none;
+        border-radius: 12px;
+        cursor: pointer;
+        font-size: 1rem;
+      }
+      .camera-dialog button:hover {
+        background-color: #a40a3c;
+      }
+      .overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 999;
+        display: none;
+      }
+      .logo {
+        display: block;
+        margin: 0 auto;
+        max-width: 300px; /* Default for small screens */
+      }
+      @media (min-width: 1024px) {
+        .logo {
+          max-width: 500px; /* Larger size for large screens */
+        }
+      }
     </style>
   </head>
   <body>
     <div class="container">
-      <h1>PharmaBot</h1>
+      <button class="top-right-button" onclick="resetForm()">
+        <img
+          src="{{ url_for('static', filename='assets/new_chat.svg') }}"
+          alt="New Chat Icon"
+          width="24"
+          height="24"
+        />
+      </button>
+      <img
+        src="{{ url_for('static', filename='assets/pharmabot-logo.png') }}"
+        alt="PharmaBot Logo"
+        class="logo"
+      />
       <p>
         To check for potential drug interactions, upload an image or enter the
         drug names in the text field below.
@@ -212,16 +317,18 @@
 
       <form method="POST" enctype="multipart/form-data" id="interaction-form">
         <div class="form-group">
-          <button type="button" class="reset-button" onclick="resetForm()">
-            + New
-          </button>
-          <button
-            type="button"
-            class="upload-button"
-            onclick="triggerFileInput()"
-          >
-            Upload Image
-          </button>
+          <div style="display: flex; gap: 10px">
+            <button
+              type="button"
+              class="upload-button"
+              onclick="triggerFileInput()"
+            >
+              Upload Image
+            </button>
+            <button type="button" class="camera-button" onclick="openCamera()">
+              Take Picture
+            </button>
+          </div>
           <input
             type="file"
             name="file"
@@ -237,7 +344,14 @@
               placeholder="Type your text here..."
               oninput="disableFileInput(); validateInput();"
             ></textarea>
-            <button type="submit" class="submit-button">&#10148;</button>
+            <button type="submit" class="submit-button">
+              <img
+                src="{{ url_for('static', filename='assets/submit.svg') }}"
+                alt="Submit"
+                width="20"
+                height="20"
+              />
+            </button>
           </div>
           <span id="validation-message" class="validation-message"></span>
         </div>
@@ -246,24 +360,8 @@
 
       {% if result %}
       <div class="result-section">
-        <div class="result-card">
-          <h2>Detected Pharma Terms:</h2>
-          {% if result.drugs_list %}
-          <ul>
-            {% for drug in result.drugs_list %}
-            <li>{{ drug }}</li>
-            {% endfor %}
-          </ul>
-          {% else %}
-          <p>No pharma terms detected.</p>
-          {% endif %}
-        </div>
-        <div class="result-card">
-          <h2>Extracted or Entered Text:</h2>
-          <pre>{{ result.extracted_text }}</pre>
-        </div>
         {% if result.image_data and result.detection_result %}
-        <div class="result-card">
+        <div class="result-card small">
           <h2>Detected Objects:</h2>
           <div class="image-container" id="image-container">
             <img
@@ -280,11 +378,50 @@
           </script>
           <script src="/static/js/bounding-box.js"></script>
         </div>
+        {% endif %} {% if result.drugs_list %}
+        <div class="result-card small">
+          <h2>Detected Drugs:</h2>
+          <ul>
+            {% for drug in result.drugs_list %}
+            <li>{{ drug }}</li>
+            {% endfor %}
+          </ul>
+        </div>
+        {% endif %} {% if result.interaction_result or
+        result.interaction_message %}
+        <div class="result-card large">
+          <h2>Drug Interaction Analysis:</h2>
+          {% if result.interaction_message %}
+          <p style="color: red; font-weight: bold">
+            {{ result.interaction_message }}
+          </p>
+          {% else %}
+          <div
+            style="
+              text-align: left;
+              background: #f4f4f9;
+              padding: 20px;
+              border-radius: 6px;
+              word-wrap: break-word;
+              overflow-x: hidden;
+            "
+          >
+            {{ result.interaction_result | bold_text | safe }}
+          </div>
+          {% endif %}
+        </div>
         {% endif %}
       </div>
       {% endif %} {% if error %}
       <p class="error">{{ error }}</p>
       {% endif %}
+    </div>
+
+    <div class="overlay" id="camera-overlay"></div>
+    <div class="camera-dialog" id="camera-dialog">
+      <video autoplay></video>
+      <button id="capture-button">Capture</button>
+      <button id="close-camera-button">Close</button>
     </div>
 
     <script>
@@ -344,6 +481,68 @@
         if (resultSection) {
           resultSection.style.display = "flex";
         }
+      }
+
+      function openCamera() {
+        const overlay = document.getElementById("camera-overlay");
+        const dialog = document.getElementById("camera-dialog");
+        const videoElement = dialog.querySelector("video");
+        const captureButton = document.getElementById("capture-button");
+        const closeButton = document.getElementById("close-camera-button");
+
+        overlay.style.display = "block";
+        dialog.style.display = "flex";
+
+        navigator.mediaDevices
+          .getUserMedia({ video: true })
+          .then((stream) => {
+            videoElement.srcObject = stream;
+
+            captureButton.onclick = () => {
+              const canvas = document.createElement("canvas");
+              canvas.width = videoElement.videoWidth;
+              canvas.height = videoElement.videoHeight;
+              const context = canvas.getContext("2d");
+              context.drawImage(
+                videoElement,
+                0,
+                0,
+                canvas.width,
+                canvas.height
+              );
+
+              canvas.toBlob((blob) => {
+                const file = new File([blob], "captured_image.jpg", {
+                  type: "image/jpeg",
+                });
+                const dataTransfer = new DataTransfer();
+                dataTransfer.items.add(file);
+                const fileInput = document.getElementById("file-input");
+                fileInput.files = dataTransfer.files;
+                handleFileUpload();
+              });
+
+              stream.getTracks().forEach((track) => track.stop());
+              closeCamera();
+            };
+
+            closeButton.onclick = () => {
+              stream.getTracks().forEach((track) => track.stop());
+              closeCamera();
+            };
+          })
+          .catch((error) => {
+            console.error("Error accessing camera:", error);
+            alert("Unable to access the camera.");
+            closeCamera();
+          });
+      }
+
+      function closeCamera() {
+        const overlay = document.getElementById("camera-overlay");
+        const dialog = document.getElementById("camera-dialog");
+        overlay.style.display = "none";
+        dialog.style.display = "none";
       }
 
       form.addEventListener("submit", (event) => {
