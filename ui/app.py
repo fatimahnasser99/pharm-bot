@@ -1,9 +1,10 @@
 from flask import Flask, render_template, request
 import requests
 import re
+import os
 
 app = Flask(__name__)
-GATEWAY_URL = "http://gateway:5000/analyze"
+GATEWAY_URL = os.getenv("GATEWAY_URL", "http://gateway:5000/analyze") 
 
 @app.route("/", methods=["GET", "POST"])
 def index():

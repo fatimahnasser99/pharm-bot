@@ -22,12 +22,12 @@ services:
       - drug-extractor-service
       - drug-interaction-service
     environment:
-      APP_HOST: "0.0.0.0"
-      APP_PORT: "5000"
-      DETECTION_URL: "http://medicine-detection-service:5001/detect"
-      OCR_URL: "http://ocr-service:5001/extracted_text"
-      EXTRACTOR_URL: "http://drug-extractor-service:5000/extract"
-      INTERACTION_URL: "http://drug-interaction-service:8000/rag"
+      APP_HOST: 0.0.0.0
+      APP_PORT: 5000
+      DETECTION_URL: http://medicine-detection-service:5001/detect
+      OCR_URL: http://ocr-service:5001/extracted_text
+      EXTRACTOR_URL: http://drug-extractor-service:5000/extract
+      INTERACTION_URL: http://drug-interaction-service:8000/rag
     networks:
       - app-network
 
@@ -36,6 +36,9 @@ services:
     container_name: medicine-detection-service
     ports:
       - "5001:5001"
+    environment:
+      - MODEL_PATH=src/model/yolo11.pt
+      - MODEL_FILE_ID=12k1Ni6QKxevlEeWp5Z7360HxEdT_7EQK
     networks:
       - app-network
 
