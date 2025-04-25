@@ -1,4 +1,4 @@
-from prometheus_client import Histogram, Gauge, Counter
+from prometheus_client import Histogram, Counter
 
 # Drug interaction metrics
 INTERACTION_LATENCY = Histogram(
@@ -7,7 +7,7 @@ INTERACTION_LATENCY = Histogram(
     ['status']
 )
 
-INTERACTIONS_FOUND = Gauge(
+INTERACTIONS_FOUND = Counter(
     'interaction_pairs_total',
     'Number of interaction pairs found',
     ['status']
@@ -30,7 +30,7 @@ def record_interaction_metrics(duration, interaction_count, success=True, error_
     """
     status = 'success' if success else 'failure'
     INTERACTION_LATENCY.labels(status=status).observe(duration)
-    INTERACTIONS_FOUND.labels(status=status).set(interaction_count)
+    INTERACTIONS_FOUND.labels(status=status).inc(interaction_count)
     
     if not success and error_type:
-        INTERACTION_ERRORS.labels(error_type=error_type).inc() 
+        INTERACTION_ERRORS.labels(error_type=error_type).inc()

@@ -155,7 +155,7 @@
               }
             ]
           },
-          "unit": "reqps"
+          "unit": "req/ms"
         },
         "overrides": []
       },
@@ -184,12 +184,12 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "sum(rate(detection_requests_total[5m]))",
-          "legendFormat": "Request Rate",
+          "expr": "sum(detection_requests_total)",
+          "legendFormat": "objects",
           "refId": "A"
         }
       ],
-      "title": "Request Rate",
+      "title": "Count Request",
       "type": "timeseries"
     },
     {
@@ -242,7 +242,7 @@
               }
             ]
           },
-          "unit": "percent"
+          "unit": ""
         },
         "overrides": []
       },
@@ -366,12 +366,12 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "sum(rate(detection_objects_total[5m]))",
-          "legendFormat": "Objects Detected",
+          "expr": "sum(detection_objects_total)",
+          "legendFormat": "Objects",
           "refId": "A"
         }
       ],
-      "title": "Objects Detected",
+      "title": "Objects Detected Cumalative Count",
       "type": "timeseries"
     }
   ],

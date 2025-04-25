@@ -163,10 +163,13 @@ def analyze():
         if interaction_response.status_code == 200:
             interaction_result = interaction_response.json().get("answer", {}).get("content", "")
             # Count interaction pairs (assuming they're separated by newlines)
-            interaction_pairs = len(interaction_result.split('\n'))
+            if interaction_result['Clinically Significant Interaction'] == 'Yes':
+                found_interaction = 1
+            else:
+                found_interaction = 0
             record_interaction_metrics(
                 duration=interaction_duration,
-                interaction_count=interaction_pairs,
+                interaction_count=found_interaction,
                 success=True
             )
         else:

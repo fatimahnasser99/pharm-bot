@@ -59,7 +59,7 @@
               }
             ]
           },
-          "unit": "reqps"
+          "unit": "req/ms"
         },
         "overrides": []
       },
@@ -88,12 +88,12 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "sum(rate(http_requests_total[5m]))",
-          "legendFormat": "Total Request Rate",
+          "expr": "sum(http_requests_total)",
+          "legendFormat": "Total Request",
           "refId": "A"
         }
       ],
-      "title": "Total Request Rate",
+      "title": "Total Request",
       "type": "timeseries"
     },
     {
@@ -146,7 +146,7 @@
               }
             ]
           },
-          "unit": "ms"
+          "unit": "req/ms"
         },
         "overrides": []
       },
@@ -392,7 +392,7 @@
               }
             ]
           },
-          "unit": "ms"
+          "unit": "req/ms"
         },
         "overrides": []
       },
@@ -534,7 +534,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "sum(rate(detection_errors_total[5m]))",
+          "expr": "sum(detection_errors_total)",
           "legendFormat": "Detection Errors",
           "refId": "A"
         },
@@ -543,7 +543,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "sum(rate(ocr_errors_total[5m]))",
+          "expr": "sum(ocr_errors_total)",
           "legendFormat": "OCR Errors",
           "refId": "B"
         },
@@ -552,7 +552,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "sum(rate(extractor_errors_total[5m]))",
+          "expr": "sum(extractor_errors_total)",
           "legendFormat": "Extractor Errors",
           "refId": "C"
         },
@@ -561,12 +561,12 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "sum(rate(interaction_errors_total[5m]))",
+          "expr": "sum(interaction_errors_total)",
           "legendFormat": "Interaction Errors",
           "refId": "D"
         }
       ],
-      "title": "IEP Error Rates",
+      "title": "IEP Error Count",
       "type": "timeseries"
     },
     {
@@ -619,7 +619,7 @@
               }
             ]
           },
-          "unit": "reqps"
+          "unit": "count"
         },
         "overrides": []
       },
@@ -648,8 +648,8 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "sum(rate(detection_requests_total[5m]))",
-          "legendFormat": "Detection Requests",
+          "expr": "sum(detection_objects_total)",
+          "legendFormat": "Count Objects",
           "refId": "A"
         },
         {
@@ -657,8 +657,8 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "sum(rate(ocr_requests_total[5m]))",
-          "legendFormat": "OCR Requests",
+          "expr": "sum(ocr_text_length_total)/100",
+          "legendFormat": "Count OCR characters extracted (100 chars)",
           "refId": "B"
         },
         {
@@ -666,8 +666,8 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "sum(rate(extractor_requests_total[5m]))",
-          "legendFormat": "Extractor Requests",
+          "expr": "sum(extractor_drugs_total)",
+          "legendFormat": "Count Drugs Extracted",
           "refId": "C"
         },
         {
@@ -675,12 +675,12 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "sum(rate(interaction_requests_total[5m]))",
-          "legendFormat": "Interaction Requests",
+          "expr": "sum(interaction_pairs_total)",
+          "legendFormat": "Count Interaction Pairs",
           "refId": "D"
         }
       ],
-      "title": "IEP Component Request Rates",
+      "title": "Cumulative Counts",
       "type": "timeseries"
     }
   ],

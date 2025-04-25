@@ -1,4 +1,4 @@
-from prometheus_client import Histogram, Gauge, Counter
+from prometheus_client import Histogram, Counter
 
 # Drug extractor metrics
 EXTRACTOR_LATENCY = Histogram(
@@ -7,7 +7,7 @@ EXTRACTOR_LATENCY = Histogram(
     ['status']
 )
 
-DRUGS_EXTRACTED = Gauge(
+DRUGS_EXTRACTED = Counter(
     'extractor_drugs_total',
     'Number of drug names parsed from text',
     ['status']
@@ -30,7 +30,7 @@ def record_extractor_metrics(duration, drug_count, success=True, error_type=None
     """
     status = 'success' if success else 'failure'
     EXTRACTOR_LATENCY.labels(status=status).observe(duration)
-    DRUGS_EXTRACTED.labels(status=status).set(drug_count)
+    DRUGS_EXTRACTED.labels(status=status).inc(drug_count)
     
     if not success and error_type:
-        EXTRACTOR_ERRORS.labels(error_type=error_type).inc() 
+        EXTRACTOR_ERRORS.labels(error_type=error_type).inc()
