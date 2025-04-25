@@ -6,7 +6,9 @@ from ultralytics import YOLO
 
 app = Flask(__name__)
 
-model = YOLO("src/model/yolo11.pt")
+# Fetch model path from environment variable
+model_path = os.environ.get("MODEL_PATH", "src/model/yolo11.pt")
+model = YOLO(model_path)
 
 @app.route('/detect', methods=['POST'])
 def detect_medicine():

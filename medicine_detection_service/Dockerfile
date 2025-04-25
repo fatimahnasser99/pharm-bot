@@ -12,6 +12,18 @@ RUN apt-get update && apt-get install -y \
     libglib2.0-0 \
     && rm -rf /var/lib/apt/lists/*
 
+# Install gdown for downloading files from Google Drive
+RUN pip install gdown
+
+# Set the default Google Drive file ID as an environment variable
+ENV MODEL_FILE_ID="12k1Ni6QKxevlEeWp5Z7360HxEdT_7EQK"
+
+# Create the directory for the model weights
+RUN mkdir -p src/model
+
+# Use gdown to download the model weights using the environment variable
+RUN gdown --id $MODEL_FILE_ID -O src/model/yolo11.pt
+
 # Copy the current directory contents into the container at /app
 COPY . /app
 

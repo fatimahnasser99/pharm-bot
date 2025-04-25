@@ -235,6 +235,11 @@ spec:
           image: hsh24/medicine-detection-model:latest
           ports:
             - containerPort: 5001
+          env:
+            - name: MODEL_PATH
+              value: "src/model/yolo11.pt"
+            - name: MODEL_FILE_ID
+              value: "12k1Ni6QKxevlEeWp5Z7360HxEdT_7EQK"
 ---
 apiVersion: v1
 kind: Service

@@ -1,5 +1,5 @@
-version: '3.9'
- 
+version: "3.9"
+
 services:
   gateway:
     build:
@@ -21,16 +21,19 @@ services:
       INTERACTION_URL: http://drug-interaction-service:8000/rag
     networks:
       - app-network
- 
+
   medicine-detection-service:
     build:
       context: ./medicine_detection_service
     container_name: medicine-detection-service
     ports:
       - "5001:5001"
+    environment:
+      - MODEL_PATH=src/model/yolo11.pt
+      - MODEL_FILE_ID=12k1Ni6QKxevlEeWp5Z7360HxEdT_7EQK
     networks:
       - app-network
- 
+
   ocr-service:
     build:
       context: ./ocr-service
@@ -56,7 +59,7 @@ services:
       - ./secrets/key.json:/app/key.json:ro
     networks:
       - app-network
- 
+
   drug-extractor-service:
     build:
       context: ./drug_extractor_service
@@ -69,7 +72,7 @@ services:
       OPENAI_API_KEY: ${OPENAI_API_KEY}
     networks:
       - app-network
- 
+
   drug-interaction-service:
     build:
       context: ./drug_interaction_service
@@ -82,7 +85,7 @@ services:
       INDEX_NAME: pharma-bot-rag
     networks:
       - app-network
- 
+
   ui:
     build:
       context: ./ui
@@ -93,7 +96,7 @@ services:
       - gateway
     networks:
       - app-network
- 
+
 networks:
   app-network:
     driver: bridge
