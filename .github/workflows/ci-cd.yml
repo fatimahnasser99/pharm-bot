@@ -1,0 +1,47 @@
+name: CI/CD_Build_&_Push_All_Services
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    env:
+      IMAGE_TAG: ${{ github.sha }}
+      DOCKER_USER: ${{ secrets.DOCKER_HUB_USERNAME }}
+      REGISTRY: docker.io
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_TOKEN }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and push all service images
+        run: |
+          declare -A services=(
+            ["gateway"]="./gateway"
+            ["medicine-detection-service"]="./medicine_detection_service"
+            ["ocr-service"]="./ocr-service"
+            ["drug-extractor-service"]="./drug_extractor_service"
+            ["drug-interaction-service"]="./drug_interaction_service"
+            ["ui"]="./ui"
+          )
+
+          for name in "${!services[@]}"; do
+            IMAGE_NAME="$DOCKER_USER/$name:$IMAGE_TAG"
+            echo "Building and pushing $IMAGE_NAME"
+            docker build -t $IMAGE_NAME ${services[$name]}
+            docker push $IMAGE_NAME
+          done
