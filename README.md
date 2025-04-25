@@ -49,10 +49,10 @@ cd pharmabot-inference
 docker-compose up --build
 ```
 
-## Option 1: Using Kubernetes:
+## Option 2: Using Kubernetes:
 
 ```bash
-kubectl apply -f kubernetes-deployment.yaml
+kubectl apply -f kubernetes.yaml
 ```
 
 followed by:
