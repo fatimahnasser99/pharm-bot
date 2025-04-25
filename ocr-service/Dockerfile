@@ -6,11 +6,8 @@ WORKDIR /app
 # Copy the current directory contents into the container at /app
 COPY . /app
 
-# Copy the Google Cloud credentials file into the container
-COPY key.json /app/key.json
-
 # Install dependencies
-RUN pip install -r requirements.txt
+RUN pip install -r requirements.txtey.json
 
 # Expose the port Flask runs on
 EXPOSE 5001
