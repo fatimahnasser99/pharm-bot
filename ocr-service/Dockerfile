@@ -6,9 +6,6 @@ WORKDIR /app
 # Copy the current directory contents into the container at /app
 COPY . /app
 
-# Ensure the credentials file is copied
-COPY key.json /app/key.json
-
 # Install dependencies
 RUN pip install -r requirements.txt
 
