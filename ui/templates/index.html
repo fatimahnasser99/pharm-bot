@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PharmaBot</title>
+    <style>
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #f4f4f9;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        color: #333;
+      }
+      .container {
+        width: 100%;
+        background: #ffffff;
+        margin: 20px;
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+        height: auto;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        position: relative;
+      }
+      @media (min-width: 1024px) {
+        .container {
+          min-height: 88vh;
+        }
+      }
+      h1 {
+        color: #840132;
+        margin-bottom: 0px;
+        margin-top: 0px;
+        text-align: center;
+        font-size: 2.5rem;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+      }
+      p {
+        text-align: center;
+        font-weight: 600;
+        margin-bottom: 20px;
+      }
+      .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .camera-button,
+      .upload-button {
+        display: flex;
+        flex: 1;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+        background-color: #840132;
+        color: white;
+        padding: 10px;
+        border: none;
+        border-radius: 12px;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+      }
+      .camera-button:hover,
+      .upload-button:hover {
+        background-color: #a40a3c;
+      }
+      .camera-button img,
+      .upload-button img {
+        width: 20px;
+        height: 20px;
+      }
+      .input-container {
+        position: relative;
+        display: flex;
+        align-items: center;
+      }
+      textarea {
+        width: 100%;
+        padding: 10px 40px 10px 10px;
+        border: 1px solid #ccc;
+        border-radius: 12px;
+        font-size: 1rem;
+        resize: none;
+      }
+      .submit-button {
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 36px;
+        height: 36px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+      }
+      .loader {
+        display: none;
+        margin: 30px auto;
+        border: 4px solid #f3f3f3;
+        border-top: 4px solid #840132;
+        border-radius: 50%;
+        width: 30px;
+        height: 30px;
+        animation: spin 1s linear infinite;
+      }
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+      .reset-button {
+        display: block;
+        width: auto;
+        max-width: 80px;
+        background-color: #016804d6;
+        color: white;
+        padding: 10px 10px;
+        border: none;
+        border-radius: 30px;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+      }
+      .reset-button:hover {
+        background-color: #45a049;
+      }
+      .result-section {
+        margin-top: 20px;
+        display: flex;
+        flex-wrap: nowrap; /* Ensure all cards are on the same row */
+        gap: 20px;
+        justify-content: space-between; /* Distribute cards evenly across the row */
+      }
+      .result-card {
+        background: #fff;
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+        text-align: center;
+        flex: 1; /* Allow cards to grow and take up available space */
+        max-width: 45%; /* Ensure small cards take up to 45% of the row */
+      }
+      .result-card.large {
+        flex: 2;
+        max-width: 90%; /* Ensure large cards take up to 90% of the row */
+      }
+      @media (max-width: 1024px) {
+        .result-section {
+          flex-wrap: wrap; /* Allow wrapping on smaller screens */
+        }
+        .result-card {
+          max-width: 100%; /* Full width for all cards on smaller screens */
+        }
+      }
+      .result-card h2 {
+        color: #840132;
+        margin-bottom: 10px;
+        font-size: 1.5rem;
+      }
+      .result-card ul {
+        list-style-type: none;
+        padding: 0;
+        margin: 0;
+      }
+      .result-card ul li {
+        background: #fce4ec;
+        margin: 5px 0;
+        padding: 10px;
+        border-radius: 6px;
+        color: #840132;
+        font-weight: bold;
+      }
+      .result-card pre {
+        background: #f4f4f9;
+        padding: 10px;
+        border-radius: 6px;
+        white-space: pre-wrap; /* Enable word wrapping */
+        word-wrap: break-word; /* Break long words */
+        overflow-x: hidden; /* Prevent horizontal scrolling */
+        font-size: 0.9rem;
+        text-align: left;
+      }
+      .image-container img {
+        max-width: 100%;
+        max-height: 280px; /* Restrict image height to container */
+        border: 2px solid #840132;
+        border-radius: 8px;
+      }
+      .error {
+        color: red;
+        font-weight: bold;
+        text-align: center;
+        margin-top: 20px;
+      }
+      .validation-message {
+        color: red;
+        margin-left: 10px;
+        margin-top: -8px;
+        font-size: 0.7rem;
+        display: none;
+      }
+      .top-right-button {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        background-color: transparent;
+        border: none;
+        cursor: pointer;
+        padding: 10px;
+        border-radius: 50%;
+        transition: background-color 0.3s ease;
+      }
+      @media screen and (max-width: 768px) {
+        .top-right-button {
+          top: 5px;
+          right: 5px;
+        }
+      }
+      .top-right-button:hover {
+        background-color: rgba(0, 0, 0, 0.1);
+      }
+      .top-right-button svg {
+        fill: #840132;
+        width: 24px;
+        height: 24px;
+      }
+      .camera-dialog {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        padding: 20px;
+        z-index: 1000;
+        display: none;
+        flex-direction: column;
+        align-items: center;
+      }
+      .camera-dialog video {
+        border: 2px solid #840132;
+        border-radius: 12px;
+        max-width: 100%;
+        max-height: 100%;
+      }
+      .camera-dialog button {
+        margin-top: 10px;
+        padding: 10px 20px;
+        background-color: #840132;
+        color: white;
+        border: none;
+        border-radius: 12px;
+        cursor: pointer;
+        font-size: 1rem;
+      }
+      .camera-dialog button:hover {
+        background-color: #a40a3c;
+      }
+      .overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 999;
+        display: none;
+      }
+      .logo {
+        display: block;
+        margin: 0 auto;
+        max-width: 300px; /* Default for small screens */
+      }
+      @media (min-width: 1024px) {
+        .logo {
+          max-width: 500px; /* Larger size for large screens */
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <button class="top-right-button" onclick="resetForm()">
+        <img
+          src="{{ url_for('static', filename='assets/new_chat.svg') }}"
+          alt="New Chat Icon"
+          width="24"
+          height="24"
+        />
+      </button>
+      <img
+        src="{{ url_for('static', filename='assets/pharmabot-logo.png') }}"
+        alt="PharmaBot Logo"
+        class="logo"
+      />
+      <p>
+        To check for potential drug interactions, upload an image or enter the
+        drug names in the text field below.
+      </p>
+
+      <form method="POST" enctype="multipart/form-data" id="interaction-form">
+        <div class="form-group">
+          <div style="display: flex; gap: 10px">
+            <button
+              type="button"
+              class="upload-button"
+              onclick="triggerFileInput()"
+            >
+              Upload Image
+            </button>
+            <button type="button" class="camera-button" onclick="openCamera()">
+              Take Picture
+            </button>
+          </div>
+          <input
+            type="file"
+            name="file"
+            id="file-input"
+            style="display: none"
+            onchange="handleFileUpload()"
+          />
+          <div class="input-container">
+            <textarea
+              name="text"
+              id="text-input"
+              rows="3"
+              placeholder="Type your text here..."
+              oninput="disableFileInput(); validateInput();"
+            ></textarea>
+            <button type="submit" class="submit-button">
+              <img
+                src="{{ url_for('static', filename='assets/submit.svg') }}"
+                alt="Submit"
+                width="20"
+                height="20"
+              />
+            </button>
+          </div>
+          <span id="validation-message" class="validation-message"></span>
+        </div>
+        <div class="loader" id="loader"></div>
+      </form>
+
+      {% if result %}
+      <div class="result-section">
+        {% if result.image_data and result.detection_result %}
+        <div class="result-card small">
+          <h2>Detected Objects:</h2>
+          <div class="image-container" id="image-container">
+            <img
+              id="uploaded-image"
+              src="data:image/jpeg;base64,{{ result.image_data }}"
+              alt="Uploaded Image"
+            />
+          </div>
+          <script>
+            window.detectionResult = JSON.parse(
+              `{{ result.detection_result | safe }}`
+            );
+          </script>
+          <script src="/static/js/bounding-box.js"></script>
+        </div>
+        {% endif %} {% if result.drugs_list %}
+        <div class="result-card small">
+          <h2>Detected Drugs:</h2>
+          <ul>
+            {% for drug in result.drugs_list %}
+            <li>{{ drug }}</li>
+            {% endfor %}
+          </ul>
+        </div>
+        {% endif %} {% if result.interaction_result or
+        result.interaction_message %}
+        <div class="result-card large">
+          <h2>Drug Interaction Analysis:</h2>
+          {% if result.interaction_message %}
+          <p style="color: red; font-weight: bold">
+            {{ result.interaction_message }}
+          </p>
+          {% endif %} {% if result.interaction_result and not
+          result.interaction_message %}
+          <div
+            style="
+              text-align: left;
+              background: #f4f4f9;
+              padding: 20px;
+              border-radius: 6px;
+              word-wrap: break-word;
+              overflow-x: hidden;
+            "
+          >
+            {{ result.interaction_result | safe }}
+          </div>
+          {% endif %}
+        </div>
+        {% endif %}
+      </div>
+      {% endif %} {% if error %}
+      <p class="error">{{ error }}</p>
+      {% endif %}
+    </div>
+
+    <div class="overlay" id="camera-overlay"></div>
+    <div class="camera-dialog" id="camera-dialog">
+      <video autoplay></video>
+      <button id="capture-button">Capture</button>
+      <button id="close-camera-button">Close</button>
+    </div>
+
+    <script>
+      const fileInput = document.getElementById("file-input");
+      const textInput = document.getElementById("text-input");
+      const validationMessage = document.getElementById("validation-message");
+      const form = document.getElementById("interaction-form");
+      const loader = document.getElementById("loader");
+      const resultSection = document.querySelector(".result-section");
+
+      function triggerFileInput() {
+        fileInput.click();
+      }
+
+      function handleFileUpload() {
+        if (fileInput.files.length > 0) {
+          textInput.disabled = true;
+          hideResults();
+          loader.style.display = "block";
+          form.submit();
+        }
+      }
+
+      function disableFileInput() {
+        if (textInput.value.trim() !== "") {
+          fileInput.disabled = true;
+        } else {
+          fileInput.disabled = false;
+        }
+      }
+
+      function validateInput() {
+        if (textInput.value.trim() === "") {
+          validationMessage.textContent = "Input cannot be empty.";
+          validationMessage.style.display = "inline";
+        } else {
+          validationMessage.style.display = "none";
+        }
+      }
+
+      function resetForm() {
+        form.reset();
+        textInput.disabled = false;
+        fileInput.disabled = false;
+        loader.style.display = "none";
+        hideResults();
+        validationMessage.style.display = "none";
+      }
+
+      function hideResults() {
+        if (resultSection) {
+          resultSection.style.display = "none";
+        }
+      }
+
+      function showResults() {
+        if (resultSection) {
+          resultSection.style.display = "flex";
+        }
+      }
+
+      function openCamera() {
+        const overlay = document.getElementById("camera-overlay");
+        const dialog = document.getElementById("camera-dialog");
+        const videoElement = dialog.querySelector("video");
+        const captureButton = document.getElementById("capture-button");
+        const closeButton = document.getElementById("close-camera-button");
+
+        overlay.style.display = "block";
+        dialog.style.display = "flex";
+
+        navigator.mediaDevices
+          .getUserMedia({ video: true })
+          .then((stream) => {
+            videoElement.srcObject = stream;
+
+            captureButton.onclick = () => {
+              const canvas = document.createElement("canvas");
+              canvas.width = videoElement.videoWidth;
+              canvas.height = videoElement.videoHeight;
+              const context = canvas.getContext("2d");
+              context.drawImage(
+                videoElement,
+                0,
+                0,
+                canvas.width,
+                canvas.height
+              );
+
+              canvas.toBlob((blob) => {
+                const file = new File([blob], "captured_image.jpg", {
+                  type: "image/jpeg",
+                });
+                const dataTransfer = new DataTransfer();
+                dataTransfer.items.add(file);
+                const fileInput = document.getElementById("file-input");
+                fileInput.files = dataTransfer.files;
+                handleFileUpload();
+              });
+
+              stream.getTracks().forEach((track) => track.stop());
+              closeCamera();
+            };
+
+            closeButton.onclick = () => {
+              stream.getTracks().forEach((track) => track.stop());
+              closeCamera();
+            };
+          })
+          .catch((error) => {
+            alert("Unable to access the camera.");
+            closeCamera();
+          });
+      }
+
+      function closeCamera() {
+        const overlay = document.getElementById("camera-overlay");
+        const dialog = document.getElementById("camera-dialog");
+        overlay.style.display = "none";
+        dialog.style.display = "none";
+      }
+
+      form.addEventListener("submit", (event) => {
+        event.preventDefault();
+
+        const textValue = textInput.value.trim();
+        if (!textValue && (!fileInput.files || fileInput.files.length === 0)) {
+          validationMessage.textContent =
+            "Please enter text or upload an image.";
+          validationMessage.style.display = "inline";
+          return;
+        }
+
+        validationMessage.style.display = "none";
+        loader.style.display = "block";
+        hideResults();
+        form.submit();
+      });
+
+      textInput.addEventListener("keydown", (event) => {
+        if (event.key === "Enter" && !event.shiftKey) {
+          event.preventDefault();
+          form.querySelector(".submit-button").click();
+        }
+      });
+    </script>
+  </body>
+</html>
