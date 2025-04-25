@@ -73,7 +73,7 @@ spec:
     spec:
       containers:
         - name: ocr-service
-          image: hsh24/ocr-service:latest
+          image: safaasalman/ocr-service:latest
           ports:
             - containerPort: 5001
           env:

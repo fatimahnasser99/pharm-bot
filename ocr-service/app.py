@@ -10,7 +10,7 @@ credentials = {
     "type": os.environ.get("TYPE"),
     "project_id": os.environ.get("PROJECT_ID"),
     "private_key_id": os.environ.get("PRIVATE_KEY_ID"),
-    "private_key": os.environ.get("PRIVATE_KEY").replace("\\n", "\n"),
+    "private_key": os.environ.get("PRIVATE_KEY", "").replace("\\n", "\n"),
     "client_email": os.environ.get("CLIENT_EMAIL"),
     "client_id": os.environ.get("CLIENT_ID"),
     "auth_uri": os.environ.get("AUTH_URI"),
@@ -20,12 +20,18 @@ credentials = {
     "universe_domain": os.environ.get("UNIVERSE_DOMAIN"),
 }
 
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/tmp/gcp_credentials.json"
-with open("/tmp/gcp_credentials.json", "w") as cred_file:
-    json.dump(credentials, cred_file)
+try:
+    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/tmp/gcp_credentials.json"
+    with open("/tmp/gcp_credentials.json", "w") as cred_file:
+        json.dump(credentials, cred_file)
+except Exception as e:
+    raise RuntimeError(f"Failed to set up Google Cloud credentials: {e}")
 
 # Initialize Google Cloud Vision client
-client = vision.ImageAnnotatorClient()
+try:
+    client = vision.ImageAnnotatorClient()
+except Exception as e:
+    raise RuntimeError(f"Failed to initialize Google Cloud Vision client: {e}")
 
 @app.route("/extracted_text", methods=["POST"])
 def extract_text():
@@ -53,7 +59,7 @@ def extract_text():
         return jsonify({"extracted_text": text}), 200
 
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"error": f"An error occurred: {str(e)}"}), 500
 
 if __name__ == "__main__":
     host = os.environ.get("APP_HOST", "0.0.0.0")

@@ -58,7 +58,7 @@ kubectl apply -f kubernetes.yaml
 followed by:
 
 ```bash
-kubectl port-forward svc/ui 5004:5004 -n pharma-bot
+kubectl port-forward svc/ui 5004:80 -n pharma-bot
 ```
 
 In case you changed one image no need to build the whole thing again
