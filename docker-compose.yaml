@@ -41,6 +41,7 @@ services:
     environment:
       APP_HOST: 0.0.0.0
       APP_PORT: 5001
+      GOOGLE_APPLICATION_CREDENTIALS: /app/key.json
       TYPE: service_account
       PROJECT_ID: ${GCP_PROJECT_ID}
       PRIVATE_KEY_ID: ${GCP_PRIVATE_KEY_ID}

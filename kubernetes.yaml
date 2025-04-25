@@ -23,7 +23,7 @@ spec:
     spec:
       containers:
         - name: gateway
-          image: hsh24/gateway
+          image: hsh24/gateway:latest
           ports:
             - containerPort: 5000
           env:
@@ -148,7 +148,7 @@ spec:
     spec:
       containers:
         - name: drug-extractor
-          image: fhnass99/drug-extractor-service:latest
+          image: hsh24/drug-extractor-service:latest
           ports:
             - containerPort: 5000
           env:
@@ -272,7 +272,7 @@ spec:
     spec:
       containers:
         - name: ui
-          image: hsh24/ui
+          image: hsh24/ui:latest
           ports:
             - containerPort: 5004
 ---
