@@ -2,16 +2,16 @@ name: CI/CD_Build_&_Push_All_Services
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   pull_request:
-    branches: [ "main" ]
+    branches: ["main"]
 
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
 
     env:
-      IMAGE_TAG: ${{ github.sha }}
+      IMAGE_TAG: latest
       DOCKER_USER: ${{ secrets.DOCKER_HUB_USERNAME }}
       REGISTRY: docker.io
 
