@@ -7,7 +7,7 @@ WORKDIR /app
 COPY . /app
 
 # Install dependencies
-RUN pip install -r requirements.txtey.json
+RUN pip install -r requirements.txt
 
 # Expose the port Flask runs on
 EXPOSE 5001
