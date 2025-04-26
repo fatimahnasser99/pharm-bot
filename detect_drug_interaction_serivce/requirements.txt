@@ -1,5 +1,0 @@
-flask
-llama-index
-openai
-pydantic
-chromadb
