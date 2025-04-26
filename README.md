@@ -115,13 +115,6 @@ After all services are up, open your browser and visit:
 
 ---
 
-## 📌 Notes
-
-- All processing is done **in-memory** — no temporary files or shared volumes are used.
-- Multiple object detections are supported: each region is cropped, passed to OCR, and combined before drug name extraction.
-
----
-
 ## 🧪 Optional: Test with `curl`
 
 ```bash
@@ -136,9 +129,3 @@ curl -X POST http://localhost:5000/analyze \
   -H "Content-Type: application/json" \
   -d '{"text": "Panadol 500mg tablets"}'
 ```
-
----
-
-## 📬 Contact
-
-For questions or contributions, open an issue or reach out to `@your-username`.
