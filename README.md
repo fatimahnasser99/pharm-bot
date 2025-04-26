@@ -58,6 +58,16 @@ cd pharmabot-inference
 docker-compose up --build
 ```
 
+In case you changed one image no need to build the whole thing again
+example:
+
+```bash
+docker-compose build gateway
+docker-compose up
+```
+
+This command builds and launches all services using Docker Compose.
+
 ## Option 2: Using Kubernetes:
 
 ```bash
@@ -69,16 +79,6 @@ followed by:
 ```bash
 kubectl port-forward svc/ui 5004:80 -n pharma-bot
 ```
-
-In case you changed one image no need to build the whole thing again
-example:
-
-```bash
-docker-compose build gateway
-docker-compose up
-```
-
-This command builds and launches all services using Docker Compose.
 
 ---
 
@@ -110,6 +110,7 @@ After all services are up, open your browser and visit:
 
 - Docker
 - Docker Compose
+- Kubernetes
 
 > No Python or other setup is required on your host machine — everything runs in containers.
 
